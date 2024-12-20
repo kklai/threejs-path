@@ -1,0 +1,117 @@
+body {
+	margin: 0;
+	overscroll-behavior: none;
+	overflow-x: hidden; /* Hide horizontal scrollbar */
+	background-color: #fffffb;
+}
+
+.g-header {
+	max-width: 520px;
+}
+
+.g-asset-container {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+}
+
+.g-asset-scroll-annotations {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	z-index: 1;
+}
+
+.g-asset-container canvas {
+	position: fixed;
+	top: 0;
+}
+
+.g-asset-debug-container {
+	position: -webkit-fixed;
+	position: fixed;
+	margin-top: -100vh;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	background-color: rgba(255, 255, 255, 0.65);
+	color: #000;
+	margin-left: 2px;
+	padding: 10px;
+	display: none;
+	transform: translateZ(0);
+	z-index: 203;
+}
+
+.g-asset-debug-pct {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 14px;
+	width: 100%;
+	color: #000;
+	background-color: rgba(252, 0, 255, 0.6);
+	font-family: 'Roboto', sans-serif;
+	text-align: right;
+	font-size: 12px;
+	line-height: 14px;
+	margin-top: -7px;
+	z-index: 204;
+	clip-path: polygon(
+		/* calc(100% - 110px) 7px, */ calc(100% - 48px) 7px,
+		calc(100% - 38px) 0,
+		100% 0,
+		100% 100%,
+		calc(100% - 38px) 100%,
+		calc(100% - 48px) 8px /* calc(100% - 110px) 8px */
+	);
+}
+
+.g-asset-debug-pct-soft {
+	color: #fff;
+	background-color: rgba(50, 50, 50, 0.6);
+	opacity: 0.8;
+	z-index: 204;
+	clip-path: polygon(
+		/* calc(100% - 110px) 7px, */ calc(100% - 48px) 7px,
+		calc(100% - 38px) 0,
+		100% 0,
+		100% 100%,
+		calc(100% - 38px) 100%,
+		calc(100% - 48px) 8px /* calc(100% - 110px) 8px */
+	);
+}
+
+.g-3d-labels-cont {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+
+.g-3d-label {
+	/* opacity: 0; */
+	margin-top: -5px;
+	transform: none;
+	position: absolute;
+	color: #fff;
+	font-family: 'nyt-franklin', arial, sans-serif;
+	text-shadow: none;
+	color: #000;
+	font-size: 14px;
+	letter-spacing: 0.3px;
+	/* text-transform: uppercase; */
+	/* color: rgba(255, 255, 255, 0.8); */
+}
+
+#wallContainer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}

@@ -1,0 +1,25 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link type='image/x-icon' rel='shortcut icon' href='./local/favicon.ico'>
+  <link type="text/css" rel="stylesheet" href="style.css">
+</head>
+<title>Lone Wolf</title>
+<body>
+
+	<div style="display: block; position: relative;">
+	    <div class="g-asset-container">
+	    <div class="g-asset-scroll-annotations"></div>
+        <div class="g-3d-labels-cont"></div>
+	</div>
+
+  <!-- <script type="module" src="script-3d.js"></script> -->
+  <script type="module">
+    import { mainScript } from './script-3d.js';
+    // mainScript.init ();
+    mainScript.init(null, null, []);
+  </script>
+
+</body>
+
+</html>

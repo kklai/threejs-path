@@ -220,23 +220,26 @@ export const mainScript = {
 				metalness: 0.3,
 				roughness: 1,
 				castShadow: true,
-				receiveShadow: true
+				receiveShadow: true,
+				transparent: true
 			});
 
 			let groundMesh = new THREE.Mesh(groundGeo, groundMat);
 			groundMesh.rotation.x = -Math.PI / 2;
+			groundMesh.position.set(0, 0, 0);
 			groundGroup.add(groundMesh);
 
 			let groundMat2 = new THREE.MeshStandardMaterial({
 				map: texture,
 				metalness: 0.3,
 				roughness: 1,
-				depethTest: false
+				depethTest: false,
+				transparent: true
 			});
 
 			let groundMesh2 = new THREE.Mesh(groundGeo, groundMat2);
 			groundMesh2.rotation.x = -Math.PI / 2;
-			groundMesh2.position.set(0, 2, 0);
+			groundMesh2.position.set(0, 0, 0);
 			groundGroup.add(groundMesh2);
 
 			// scene.add(groundGroup);
@@ -259,9 +262,9 @@ export const mainScript = {
 	
 	  for (var note of wall.note) {
 		const material = shaderShapes ("note", note),
-				mesh   = new THREE.Mesh (new THREE.BoxGeometry (note.width, note.height, 100), material);
+				mesh   = new THREE.Mesh (new THREE.BoxGeometry (note.width, note.height, 1), material);
 			
-		mesh.position.set(0, 100, 0);
+		mesh.position.set(0, 0, 0);
 		mesh.rotation.x = -Math.PI / 2;
 		mesh.castShadow = true;
 		material.transparent = true;
@@ -361,7 +364,7 @@ export const mainScript = {
 				float green = tex2D.g;
 				float pixelPct = ((red * 255.0) + (green * 65280.0)) / uFrames;
 			 
-				vec4 outColor = red + green > 0.0 && uDrawPct > pixelPct ? textColor : noteColor;
+				vec4 outColor = red + green > 0.0 && uDrawPct > pixelPct ? textColor :  vec4(0.0, 0.0, 0.0, 0.1);
 				
 				gl_FragColor = outColor;
 			  }
@@ -553,8 +556,9 @@ export const mainScript = {
 			inkBlack = texture;
 			
 			addGround();
-			addPath();
 			addLabels();
+
+			addPath();
 
 			window.addEventListener('resize', onWindowResize);
 			window.addEventListener('scroll', onPageScroll);

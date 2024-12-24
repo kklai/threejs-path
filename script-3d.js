@@ -38,7 +38,7 @@ export const mainScript = {
 			worldWidth = 1600,
 			worldDepth = 1156,
 			options = { backgroundColor: 0xffffff },
-			baseColor   = { note: { yellow: [0xdbbf49,0xffd626], purple: [0xb878cf,0xe394ff], orange: [0xc97c10,0xf59f28], green: [0x59bd5a,0x76ed76], clear: [0xffffff,0xffffff]},
+			baseColor   = { note: { yellow: [0xdbbf49,0xffd626], purple: [0xb878cf,0xe394ff], orange: [0xc97c10,0xf59f28], green: [0xffffff,0xffffff], clear: [0xffffff,0xffffff]},
                       tape: { blue: [0x1891ad,0x1a9ec6], purple: [0xb878cf,0xe394ff], orange: [0xc97c10,0xf59f28], green: [0x59bd5a,0x76ed76]},
                       image: { grey: [0xaaaaaa, 0xaaaaaa] }
                     },
@@ -254,6 +254,12 @@ export const mainScript = {
 				feature.material.uniforms.uFrames.value = 1500;
 				feature.material.uniforms.uImageWritingColor.value = inkBlack;
 			});
+
+			const mapbaseLoader = new THREE.TextureLoader();
+			mapbaseLoader.load("mapbase.jpg", function (texture) {
+				feature.material.uniforms.uMixImage.value = texture;
+				feature.material.uniforms.uMixStrength.value = 0.5; 
+			})
 		}
 		
 		
@@ -293,6 +299,13 @@ export const mainScript = {
 			  color2: {
 				value: new THREE.Color(color2)
 			  },
+			  uMixImage: {
+				value: null, // Texture for the new image
+				type: "t"
+			  },
+			  uMixStrength: {
+				value: 0.0
+			  },
 			  bboxMin: {
 				value: [0.0,0.0,0.0]
 			  },
@@ -326,7 +339,9 @@ export const mainScript = {
 			vertexShader: `
 			  uniform vec3 bboxMin;
 			  uniform vec3 bboxMax;
-			
+			  uniform sampler2D uMixImage;
+			  uniform float uMixStrength; 
+
 			  varying vec2 vUv;
 			  varying vec2 vTexCoord;
 		  
@@ -342,6 +357,8 @@ export const mainScript = {
 			  uniform vec3 color2;
 			  uniform sampler2D uImageWritingPosition;
 			  uniform sampler2D uImageWritingColor;
+			  uniform sampler2D uMixImage;
+			  uniform float uMixStrength; 
 			  uniform float uDrawPct;
 			  uniform vec2 uTexCoord;
 			  uniform float uFrames;
@@ -353,20 +370,36 @@ export const mainScript = {
 			  varying vec2 vUv;
 			  
 			  void main() {
-		
+			  
+			  	// Sample the existing textures
 				vec4 tex2D = texture2D (uImageWritingPosition, vTexCoord);
 				vec4 color2D = texture2D (uImageWritingColor, vTexCoord);
-		
-				vec4 noteColor = uIsClear == 1.0 ? vec4(0.0, 0.0, 0.0, 0.0) : vec4(mix(color1, color2, vUv.y), 1.0);
-				vec3 blended = vec3(color2D.r, color2D.g, color2D.b); //vec3(noteColor.r, noteColor.g, noteColor.b) * (1.0 - tex2D.b);
+
+			  	// Existing color logic
+				vec3 blended = vec3(color2D.r, color2D.g, color2D.b); 
 				vec4 textColor = vec4 (blended, tex2D.b);
+
+				// Calculate pixel percentage
 				float red = tex2D.r;
 				float green = tex2D.g;
 				float pixelPct = ((red * 255.0) + (green * 65280.0)) / uFrames;
-			 
-				vec4 outColor = red + green > 0.0 && uDrawPct > pixelPct ? textColor :  vec4(0.0, 0.0, 0.0, 0.1);
-				
-				gl_FragColor = outColor;
+			  
+			  	// Existing output color
+				vec4 outColor = red + green > 0.0 && uDrawPct > pixelPct ? textColor :  vec4(255.0, 255.0, 255.0, 0.0);
+
+				// Sample the new image
+				vec4 mixImageColor = texture2D(uMixImage, vTexCoord);
+
+				// Extract alpha channels
+				float foregroundAlpha = outColor.a;   // Alpha of outColor (foreground)
+
+				// Perform alpha compositing
+				vec3 finalRGB = mixImageColor.rgb * (1.0 - foregroundAlpha) + outColor.rgb * foregroundAlpha;
+				float finalAlpha = max(mixImageColor.a, foregroundAlpha); // Keep max alpha for visibility
+
+				// Set the final color
+				gl_FragColor = vec4(finalRGB, finalAlpha);
+
 			  }
 			`,
 			wireframe: false
